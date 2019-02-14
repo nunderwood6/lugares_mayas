@@ -37,20 +37,6 @@ L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 	    accessToken: 'pk.eyJ1IjoibnVuZGVyd29vZDYiLCJhIjoiY2o2aDQ5NWN0MDVmcjMybG00Mm9icml4ZSJ9.jgZOCzIY9h-gZnpdsGjiQA'
 }).addTo(myMap);
 
-
-var popup = L.popup();
-
-//open popup wherever user clicks
-function onMapClick(e) {
-
-	popup.setLatLng(e.latlng)
-    .setContent("You clicked the map at " + e.latlng.toString())
-    .openOn(myMap);
-}
-//add event listener
-myMap.on("click", onMapClick);
-
-
 }
 
 function addMarkers(jsonData){
