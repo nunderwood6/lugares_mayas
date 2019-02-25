@@ -5,6 +5,7 @@
 var myMap;
 var symbols;
 var activeYear = "1980";
+var popupContent;
 
 
 var topLeft = [46.40756396630067,-79.365234375],
@@ -89,10 +90,10 @@ function addMarkers(jsonData){
 function sizeMarkers(){
 
 symbols.eachLayer(function(layer){
+
 		//update radius and popup content
 		var r = Math.sqrt(layer.feature.properties[activeYear]);
-		var popupContent = "<p><b>Station:</b> " + layer.feature.properties["Station Name"] + "</p><p><b>Inches of snow in "+ activeYear + ":</b> " + layer.feature.properties[activeYear] + "</p>";
-
+		popupContent = "<p><b>Station:</b> " + layer.feature.properties["Station Name"] + "</p><p><b>Inches of snow in "+ activeYear + ":</b> " + layer.feature.properties[activeYear] + "</p>";
 
 		layer.setStyle({
 			radius: r,
@@ -101,8 +102,12 @@ symbols.eachLayer(function(layer){
 			fillOpacity: 0.8
 		});
 
-
 		layer.bindPopup(popupContent);
+		layer.getPopup().update(); 
+
+	
+		
+
 
 });
 
@@ -118,7 +123,6 @@ function createSlider(){
       max: 2010,
       value: 1980,
       slide: function(event, ui){
-      	console.log(ui.value);
 
         activeYear = ui.value;
         $("#year").html(ui.value);
