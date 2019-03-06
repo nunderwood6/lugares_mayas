@@ -2,10 +2,45 @@ body {
 	font-family: proxima-nova, sans-serif;
 }
 
+div#title {
+	margin: 0 auto;
+	text-align: center;
+}
+
+div#title h1 {
+	margin-bottom: 5px;
+	margin-top: 5px;
+}
+
 #mapid {
-	width: 80vw;
-	height: 80vh;
-	margin: 30px auto;
+	width: 60vw;
+	display: block;
+	height: 65vh;
+	margin: 0 auto 0 70px;
+	
+}
+
+div#button{
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	padding: 5px;
+	z-index: 5000;
+	font-family: proxima-nova, sans-serif;
+	font-size: 16px;
+	line-height: 16px;
+	text-align: center;
+	background-color: rgba(255,255,255,1);
+	border-radius: 5px;
+	cursor: pointer;
+	box-shadow: 3px 3px 3px #bbb;
+}
+
+#plot {
+	width: 85vw;
+	margin: 0 auto 0 40px;
+	display: block;
+	height: 20vh;
 }
 
 #slider {
@@ -27,4 +62,13 @@ body {
     margin: 0em 0;
     font-family: proxima-nova, sans-serif;
 }
+
+.xAxis,.yAxis {
+	opacity: 0.6;
+
+}
+
+
+
+
 

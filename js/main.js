@@ -6,6 +6,13 @@ var myMap;
 var symbols;
 var activeYear = "1980";
 var popupContent;
+var plot;
+var xScale;
+var yScale;
+var relative = false;
+var formatDec = d3.format(".1f");
+
+
 
 
 var topLeft = [46.40756396630067,-79.365234375],
@@ -16,6 +23,8 @@ function initialize(){
 addMap();
 loadJson();
 createSlider();
+addPlot();
+addResymbolize();
 
 }
 
@@ -27,14 +36,92 @@ function loadJson(){
 	$.getJSON("data/snow_totals.geojson", function(response){
 		snowfallData = response;
 		//check data loaded
-		console.log(snowfallData);
+	  //console.log(snowfallData);
 		//add markers
-		addMarkers(snowfallData)
+		addMarkers(snowfallData);
+    addLines(snowfallData);
 		sizeMarkers();
 
 	})
 	
 }
+
+function addPlot(){
+
+   plot = d3.select("#plot")
+              .append("svg")
+              .attr("width", "100%")
+              .attr("height", "100%");
+
+}
+
+function addLines(snowfallData){
+
+    var plotW = plot.node().getBoundingClientRect().width;
+    var plotH = plot.node().getBoundingClientRect().height;
+    var yearMin = 1980;
+    var yearMax = 2010;
+    var snowMin = 0;
+    var snowMax = 250;
+
+    //instantiate scales
+    xScale = d3.scaleLinear()
+               .domain([yearMin, yearMax])
+               .range([30,plotW-20]);
+
+    yScale = d3.scaleLinear()
+               .domain([snowMin, snowMax]) 
+               .range([plotH-20, 10]);
+
+    //line generator
+    var line = d3.line()
+        .x(function(d) { return xScale(d.year); }) 
+        .y(function(d) { return yScale(d.snow); });
+
+    //format data for line chart
+    var lineData = [];
+    snowfallData.features.forEach(function(site){
+      var singleLine = [];
+
+      for(var i = 1980; i < 2011; i++){
+
+          var yearString = i.toString();
+
+          singleLine.push({
+            year: i,
+            snow: site.properties[yearString],
+            name: site.properties["Station Name"]
+          });
+      }
+
+      lineData.push(singleLine);
+    });
+
+    //draw lines
+     var lines = plot.selectAll(".lines")
+                     .data(lineData)
+                     .enter()
+                     .append("path")
+                     .attr("d", line)
+                        .attr("fill", "none")
+                        .attr("stroke", "#1175a0")
+                        .attr("stroke-width", 1)
+                        .attr("opacity", 0.15);
+
+    //draw axes
+    plot.append("g")
+    .attr("class", "xAxis")
+    .attr("transform", "translate(0," + (plotH-20) + ")")
+    .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
+
+    plot.append("g")
+    .attr("class", "yAxis")
+    .attr("transform", "translate(" + 30 + ",0)")
+    .call(d3.axisLeft(yScale).ticks(5, d3.format("d")));
+
+
+}
+
 
 
 /////////////////////////////////////////////////////////////
@@ -65,56 +152,79 @@ L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 
 /////////////////////////////////////////////////////////////
 
-
-
 function addMarkers(jsonData){
 
 //add megacities with default circle marker styling
   symbols =  L.geoJSON(jsonData,{
  	pointToLayer: function (feature, latlng) {
- 		console.log("here");
         return L.circleMarker(latlng, {
         	style: function(feature){
         		return {
         			"radius": feature.properties[activeYear],
-        			"fillColor": "#1175a0"
+        			"fillColor": "#1175a0",
+              "opacity": 0.8
         		};
         	}
         });
     }
  }).addTo(myMap);
 
-
 }
 
 function sizeMarkers(){
 
+console.log(relative);
+
 symbols.eachLayer(function(layer){
 
-		//update radius and popup content
-		var r = Math.sqrt(layer.feature.properties[activeYear]);
-		popupContent = "<p><b>Station:</b> " + layer.feature.properties["Station Name"] + "</p><p><b>Inches of snow in "+ activeYear + ":</b> " + layer.feature.properties[activeYear] + "</p>";
+    //check measure
+    if(!relative){
+     //update radius and popup content
+    var r = Math.sqrt(layer.feature.properties[activeYear]);
+    popupContent = "<p><b>Station:</b> " + layer.feature.properties["Station Name"] + "</p><p><b>Inches of snow in "+ activeYear + ":</b> " + layer.feature.properties[activeYear] + "</p>";
 
-		layer.setStyle({
-			radius: r,
-			weight: 0.5,
-			color: "#1175a0",
-			fillOpacity: 0.8
-		});
+    layer.setStyle({
+      radius: r,
+      weight: 0.5,
+      color: "#1175a0",
+      fillOpacity: 0.8
+    });
 
-		layer.bindPopup(popupContent);
-		layer.getPopup().update(); 
+    layer.bindPopup(popupContent);
+    layer.getPopup().update(); 
+    } else {
+      //update radius and popup content
+      var diff = formatDec(layer.feature.properties[activeYear] - layer.feature.properties["Average for 1980-2011"]);
+      console.log(diff);
+      if(diff<0){
+          var color = "#ce2525"
+          r = Math.sqrt(Math.abs(diff));
+      }else if(diff>=0){
+          var color = "#1175a0"
+          r = Math.sqrt(diff);
+      }
 
+
+      popupContent = "<p><b>Station:</b> " + layer.feature.properties["Station Name"] + "</p><p><b>Inches of snow in "+ activeYear + " compared to average: </b> " + (layer.feature.properties[activeYear] - layer.feature.properties["Average for 1980-2011"]) + "</p>";
+
+      layer.setStyle({
+      radius: r,
+      weight: 0.5,
+      color: color,
+      fillOpacity: 0.8
+    });
+
+    layer.bindPopup(popupContent);
+    layer.getPopup().update();
+
+    }
 	
-		
-
 
 });
 
 }
 
 function createSlider(){
-
 
     $("#slider").slider({
       orientation: "horizontal",
@@ -130,18 +240,45 @@ function createSlider(){
 
       }
     });
+}
 
-  //  $( "#year" ).val( $( "#slider-vertical" ).slider( "value" ) );
+function addResymbolize(){
 
+  d3.select("#button").on("click", function(){
 
+    if(!relative){
+      d3.select(this).html("Raw Totals");
+      relative = true;
+    } else {
+      d3.select(this).html("Relative to<br> Average");
+      relative = false
+    }
 
+    sizeMarkers();
 
-
+  })
 
 
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
