@@ -103,6 +103,9 @@ function addLines(snowfallData){
                      .enter()
                      .append("path")
                      .attr("d", line)
+                     .attr("siteName", function(d){
+                        return d[0].name;
+                     })
                         .attr("fill", "none")
                         .attr("stroke", "#1175a0")
                         .attr("stroke-width", 1)
@@ -138,15 +141,6 @@ L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x
   maxZoom: 18
 }).addTo(myMap);
 
-
-/*
-L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibnVuZGVyd29vZDYiLCJhIjoiY2o2aDQ5NWN0MDVmcjMybG00Mm9icml4ZSJ9.jgZOCzIY9h-gZnpdsGjiQA",{
-		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-	    maxZoom: 18,
-	    id: 'mapbox.streets',
-	    accessToken: 'pk.eyJ1IjoibnVuZGVyd29vZDYiLCJhIjoiY2o2aDQ5NWN0MDVmcjMybG00Mm9icml4ZSJ9.jgZOCzIY9h-gZnpdsGjiQA'
-}).addTo(myMap);
-*/
 }
 
 
@@ -154,7 +148,7 @@ L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 
 function addMarkers(jsonData){
 
-//add megacities with default circle marker styling
+//add circle markers
   symbols =  L.geoJSON(jsonData,{
  	pointToLayer: function (feature, latlng) {
         return L.circleMarker(latlng, {
@@ -166,21 +160,40 @@ function addMarkers(jsonData){
         		};
         	}
         });
-    }
+    },
+  onEachFeature: function(layer, feature){
+
+    feature.on("popupopen", function(){
+        var name = this.feature.properties["Station Name"];
+        plot.select(`[siteName='${name}']`).classed("highlight", true);
+    });
+
+    feature.on("popupclose", function(){
+        var name = this.feature.properties["Station Name"];
+        plot.select(`[siteName='${name}']`).classed("highlight", false);
+    });
+
+  }
  }).addTo(myMap);
+
+  symbols.on("popupopen", function(){
+        console.log(this);
+  });
+  symbols.on("popupclose", function(){
+        console.log("yup");
+  });
 
 }
 
 function sizeMarkers(){
 
-console.log(relative);
 
 symbols.eachLayer(function(layer){
 
     //check measure
     if(!relative){
      //update radius and popup content
-    var r = Math.sqrt(layer.feature.properties[activeYear]);
+    var r = Math.sqrt(layer.feature.properties[activeYear])*1.2;
     popupContent = "<p><b>Station:</b> " + layer.feature.properties["Station Name"] + "</p><p><b>Inches of snow in "+ activeYear + ":</b> " + layer.feature.properties[activeYear] + "</p>";
 
     layer.setStyle({
@@ -194,18 +207,17 @@ symbols.eachLayer(function(layer){
     layer.getPopup().update(); 
     } else {
       //update radius and popup content
-      var diff = formatDec(layer.feature.properties[activeYear] - layer.feature.properties["Average for 1980-2011"]);
-      console.log(diff);
+      var diff = layer.feature.properties[activeYear] - layer.feature.properties["Average for 1980-2011"];
       if(diff<0){
           var color = "#ce2525"
-          r = Math.sqrt(Math.abs(diff));
+          r = Math.sqrt(Math.abs(diff))*1.2;
       }else if(diff>=0){
           var color = "#1175a0"
-          r = Math.sqrt(diff);
+          r = Math.sqrt(diff)*1.2;
       }
 
 
-      popupContent = "<p><b>Station:</b> " + layer.feature.properties["Station Name"] + "</p><p><b>Inches of snow in "+ activeYear + " compared to average: </b> " + (layer.feature.properties[activeYear] - layer.feature.properties["Average for 1980-2011"]) + "</p>";
+      popupContent = "<p><b>Station:</b> " + layer.feature.properties["Station Name"] + "</p><p><b>Inches of snow in "+ activeYear + " compared to average: </b> " + formatDec(layer.feature.properties[activeYear] - layer.feature.properties["Average for 1980-2011"]) + "</p>";
 
       layer.setStyle({
       radius: r,
@@ -244,22 +256,21 @@ function createSlider(){
 
 function addResymbolize(){
 
-  d3.select("#button").on("click", function(){
+  d3.selectAll("#button p").on("click", function(){
 
-    if(!relative){
-      d3.select(this).html("Raw Totals");
-      relative = true;
-    } else {
-      d3.select(this).html("Relative to<br> Average");
-      relative = false
-    }
+    var on = d3.select("p.on");
+    var off = d3.select("p.off");
 
+    on.classed("on", false);
+    on.classed("off", true);
+
+    off.classed("on", true);
+    off.classed("off", false);
+
+    relative = !relative;
     sizeMarkers();
 
   })
-
-
-
 
 }
 

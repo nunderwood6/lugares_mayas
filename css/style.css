@@ -31,9 +31,20 @@ div#button{
 	line-height: 16px;
 	text-align: center;
 	background-color: rgba(255,255,255,1);
-	border-radius: 5px;
-	cursor: pointer;
 	box-shadow: 3px 3px 3px #bbb;
+}
+
+div#button p {
+	border-radius: 5px;
+	margin: 2px;
+}
+
+div#button p.on {
+	box-shadow: 3px 3px 3px #bbb,-3px -3px 3px #bbb;
+}
+
+div#button p.off {
+	cursor: pointer;
 }
 
 #plot {
@@ -41,6 +52,12 @@ div#button{
 	margin: 0 auto 0 40px;
 	display: block;
 	height: 20vh;
+}
+
+#plot svg path.highlight {
+	opacity: 1;
+	stroke-width: 2px;
+
 }
 
 #slider {
