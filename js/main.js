@@ -11,6 +11,7 @@ var xScale;
 var yScale;
 var relative = false;
 var formatDec = d3.format(".1f");
+var currentSite;
 
 
 
@@ -40,11 +41,38 @@ function loadJson(){
 		//add markers
 		addMarkers(snowfallData);
     addLines(snowfallData);
+    addDots(snowfallData);
 		sizeMarkers();
 
 	})
 	
 }
+
+function addDots(data){
+
+console.log(data.features);
+
+  for(site of data.features){
+      var name = site.properties["Station Name"];
+      for(var i = 1980; i <2011; i++){
+
+        plot.append("circle")
+              .attr("id", `${i.toString()+name}`)
+              .attr("cx", function(){
+                return xScale(i);
+              })
+              .attr("cy", function(){
+                return yScale(site.properties[i]);
+              })
+              .attr("r", 5)
+              .attr("fill", "#000")
+              .attr("opacity", 0);
+      }
+  }
+
+}
+
+
 
 function addPlot(){
 
@@ -103,7 +131,7 @@ function addLines(snowfallData){
                      .enter()
                      .append("path")
                      .attr("d", line)
-                     .attr("siteName", function(d){
+                     .attr("site", function(d){
                         return d[0].name;
                      })
                         .attr("fill", "none")
@@ -165,24 +193,32 @@ function addMarkers(jsonData){
 
     feature.on("popupopen", function(){
         var name = this.feature.properties["Station Name"];
-        plot.select(`[siteName='${name}']`).classed("highlight", true);
+            currentSite = this.feature.properties["Station Name"];
+        plot.select(`[site='${name}']`).classed("highlight", true);
+
+        var dot = plot.selectAll(`[id='${activeYear.toString()+name}']`);
+        dot.attr("opacity", 1);
+
+        //
+     
+        console.log(dot);
+        dot.attr("opacity", 1);
     });
 
     feature.on("popupclose", function(){
         var name = this.feature.properties["Station Name"];
-        plot.select(`[siteName='${name}']`).classed("highlight", false);
+          currentSite = null;
+        plot.select(`[site='${name}']`).classed("highlight", false);
+
+        var dot = plot.selectAll(`[id='${activeYear.toString()+name}']`);
+        dot.attr("opacity", 0);
+       
     });
 
   }
  }).addTo(myMap);
 
-  symbols.on("popupopen", function(){
-        console.log(this);
-  });
-  symbols.on("popupclose", function(){
-        console.log("yup");
-  });
-
+  
 }
 
 function sizeMarkers(){
@@ -249,6 +285,9 @@ function createSlider(){
         activeYear = ui.value;
         $("#year").html(ui.value);
         sizeMarkers();
+        plot.selectAll("circle").attr("opacity", 0);
+        var dot = plot.selectAll(`[id='${activeYear.toString()+currentSite}']`);
+        dot.attr("opacity", 1);
 
       }
     });
@@ -273,20 +312,6 @@ function addResymbolize(){
   })
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
