@@ -13,6 +13,10 @@ var relative = false;
 var formatDec = d3.format(".1f");
 var currentSite;
 
+var rScale = d3.scaleSqrt()
+                .domain([0,250])
+                .range([0,25]);
+
 
 
 
@@ -26,6 +30,7 @@ loadJson();
 createSlider();
 addPlot();
 addResymbolize();
+buildLegend();
 
 }
 
@@ -229,7 +234,8 @@ symbols.eachLayer(function(layer){
     //check measure
     if(!relative){
      //update radius and popup content
-    var r = Math.sqrt(layer.feature.properties[activeYear])*1.2;
+     var r = rScale(layer.feature.properties[activeYear]);
+    //var r = Math.sqrt(layer.feature.properties[activeYear])*1.2;
     popupContent = "<p><b>Station:</b> " + layer.feature.properties["Station Name"] + "</p><p><b>Inches of snow in "+ activeYear + ":</b> " + layer.feature.properties[activeYear] + "</p>";
 
     layer.setStyle({
@@ -245,11 +251,12 @@ symbols.eachLayer(function(layer){
       //update radius and popup content
       var diff = layer.feature.properties[activeYear] - layer.feature.properties["Average for 1980-2011"];
       if(diff<0){
-          var color = "#ce2525"
-          r = Math.sqrt(Math.abs(diff))*1.2;
+          var color = "#ce2525";
+          r = rScale(Math.abs(diff));
+          //r = Math.sqrt(Math.abs(diff))*1.2;
       }else if(diff>=0){
           var color = "#1175a0"
-          r = Math.sqrt(diff)*1.2;
+          r = rScale(diff);
       }
 
 
@@ -313,7 +320,69 @@ function addResymbolize(){
 
 }
 
+function buildLegend(){
 
+var legend = d3.select("div#legend")
+                .append("svg")
+                .attr("width", "125px")
+                .attr("height", "160px")
+                .attr("overflow", "visible");
+
+
+var legendAmounts = ["250", "150", "50", "10"];
+//var legendAmounts = ["10", "50","150","250"];
+
+var legendTitle = legend.append("text")
+                            .attr("x", 0)
+                            .attr("y", 14.5)
+                            .attr("font-size", "16px")
+                            .text("Inches of Snow")
+
+
+var legendCircles = legend.selectAll("legendCircle")
+                            .data(legendAmounts)
+                            .enter()
+                            .append("circle")
+                                .attr("r", function(d){
+                                  console.log(d);
+                                  return rScale(+d);
+                                })
+                                .attr("cx", 35)
+                                .attr("cy", function(d,i){
+
+                                var above = 0
+                                 for(var j = i; j>0; j--){
+                                    var jump = rScale([legendAmounts[j-1]])+ rScale([legendAmounts[j]])+ 5;
+                                    above+=jump
+                                 }
+                                  return  above+50;
+                                })
+                                .attr("stroke", "#555")
+                                .attr("fill", "none");
+
+var legendText = legend.selectAll("legendText")
+                          .data(legendAmounts)
+                          .enter()
+                          .append("text")
+                              .attr("opacity", 0.6)
+                              .attr("font-size", "12px")
+                              .attr("x", 65)
+                              .attr("y", function(d,i){
+                                    var above = 0
+                                 for(var j = i; j>0; j--){
+                                    var jump = rScale([legendAmounts[j-1]])+ rScale([legendAmounts[j]])+ 5;
+                                    above+=jump
+                                 }
+                                  return  above+55;
+
+                              })
+                              .text(function(d){
+                                return d;
+                              });
+
+
+
+}
 
 
 
