@@ -21,12 +21,14 @@ function loadJson(){
 	$.getJSON("data/sitios.geojson", function(response){
 		sitesJson = response;
     //add index as attribute
+
     for(var i = 0; i < sitesJson.features.length; i++){
       sitesJson.features[i].properties["uniqueId"] = i+1;
-        if(i<10){
+        if(i<9){
           sitesJson.features[i].properties["uniqueId"] = "0" + (i+1);
         }
     }
+    console.log(sitesJson.features);
 
     addMarkers(sitesJson);
 	})
@@ -65,13 +67,25 @@ L.control.layers(baseTiles).addTo(myMap);
 function openPopup(feature){
   d3.select(".popupContainer").style("pointer-events", "auto");
 
-  if(feature.properties && feature.properties.name) {
+  if(feature.properties && feature.properties["NOMBRE DE ALTAR"]) {
+
+    console.log("here");
+    console.log(feature.properties.uniqueId);
+    
+    
 
     var popupContent = `<div
-      class="content"><h3>${feature.properties.name}</h3>
-       <p>${feature.geometry.coordinates[1].toFixed(6)}, 
+      class="content"><h3>${feature.properties["NOMBRE DE ALTAR"]}</h3>
+       <p><b>Significado del Nombre</b>: ${feature.properties["Significado del Nombre"]}<br>
+       <b>Función</b>: ${feature.properties["Función"]}<br>
+       <b>Contenido</b>: ${feature.properties["Contenido"]}<br>
+       <b>Localización</b>: ${feature.properties["Localización"]}<br>
+       <b>Ubicación</b>: ${feature.properties["Ubicación"]}<br>
+       <b>Distancia del parque central</b>: ${feature.properties["Distancia del parque central de la cabecera municipal al lugar del fuego"]}<br>
+       <b>Coordenadas</b>:
+       ${feature.geometry.coordinates[1].toFixed(6)}, 
        ${feature.geometry.coordinates[0].toFixed(6)}<br>
-      <b>Altitud</b>: ${feature.properties["ALTURA MSN"]} m <br></p>
+       <b>Altitud</b>: ${feature.properties["ALTURA MSNM"]} m <br></p>
       <a target="_blank" href="https://www.google.com/maps/dir/Parque+Centro+Am%C3%A9rica,+Quezaltenango,+Guatemala/${feature.geometry.coordinates[1]},${feature.geometry.coordinates[0]}/@${feature.geometry.coordinates[1]},${feature.geometry.coordinates[0]},12.53z">Direcciones</a>
       <img class="sitePhoto" src="img/${feature.properties.uniqueId}.jpg">
       <img class="closeIcon" src="img/close.svg">`;
@@ -82,10 +96,10 @@ function openPopup(feature){
                         <img class="sitePhoto" src="img/15_2.jpg">`
       }
       if(feature.properties.uniqueId == 50){
-        popupContent +=`<img class="sitePhoto" src="img/50_1.jpg>`
+        popupContent +=`<img class="sitePhoto" src="img/50_1.jpg">`
       }
       if(feature.properties.uniqueId == 51){
-        popupContent +=`<img class="sitePhoto" src="img/51_1.jpg>`
+        popupContent +=`<img class="sitePhoto" src="img/51_1.jpg">`
       }
       //add closing tag
       popupContent += "</div>";
@@ -133,7 +147,7 @@ function addMarkers(sitesJson){
       weight: 1,
       opacity: 1,
       fillOpacity: 0.8,
-      className: feature.properties["name"].replace(/ /g, "_")
+      className: feature.properties["NOMBRE DE ALTAR"].replace(/ /g, "_")
     });
   },
   onEachFeature: addPopupListener
@@ -151,10 +165,10 @@ myMap.on("movestart", removePopup);
 //execute from search input
 function zoomToSite(siteName){
   var targetSite;
+
   //search data for location with matching name
   for(var site of sitesJson.features){
-      //console.log(site);
-      if(site.properties["name"] == siteName){
+      if(site.properties["NOMBRE DE ALTAR"] == siteName){
           targetSite = site;
           var coords = site.geometry.coordinates;
           break; //end for loop once we find coordinates
