@@ -28,7 +28,6 @@ function loadJson(){
           sitesJson.features[i].properties["uniqueId"] = "0" + (i+1);
         }
     }
-    console.log(sitesJson.features);
 
     addMarkers(sitesJson);
 	})
@@ -68,44 +67,42 @@ function openPopup(feature){
   d3.select(".popupContainer").style("pointer-events", "auto");
 
   if(feature.properties && feature.properties["NOMBRE DE ALTAR"]) {
-
-    console.log("here");
-    console.log(feature.properties.uniqueId);
     
-    
-
     var popupContent = `<div
-      class="content"><h3>${feature.properties["NOMBRE DE ALTAR"]}</h3>
-       <p><b>Significado del Nombre</b>: ${feature.properties["Significado del Nombre"]}<br>
-       <b>Función</b>: ${feature.properties["Función"]}<br>
-       <b>Contenido</b>: ${feature.properties["Contenido"]}<br>
-       <b>Localización</b>: ${feature.properties["Localización"]}<br>
-       <b>Ubicación</b>: ${feature.properties["Ubicación"]}<br>
-       <b>Distancia del parque central</b>: ${feature.properties["Distancia del parque central de la cabecera municipal al lugar del fuego"]}<br>
-       <b>Coordenadas</b>:
+      class="content"><h3><span class="siteNumber">${feature.properties.ID})</span> ${feature.properties["NOMBRE DE ALTAR"]}</h3>
+       <p><img class="mayaIcon" src="img/Maya_1.svg"><b>Significado del Nombre</b>: ${feature.properties["Significado del Nombre"]}<br>
+       <img class="mayaIcon" src="img/Maya_2.svg"><b>Función</b>: ${feature.properties["Función"]}<br>
+       <img class="mayaIcon" src="img/Maya_3.svg"><b>Contenido</b>: ${feature.properties["Contenido"]}<br>
+       <img class="mayaIcon" src="img/Maya_4.svg"><b>Localización</b>: ${feature.properties["Localización"]}<br>
+       <img class="mayaIcon" src="img/Maya_5.svg"><b>Ubicación</b>: ${feature.properties["Ubicación"]}<br>
+       <img class="mayaIcon" src="img/Maya_6.svg"><b>Distancia del parque central</b>: ${feature.properties["Distancia del parque central de la cabecera municipal al lugar del fuego"]}<br>
+       <img class="mayaIcon" src="img/Maya_7.svg"><b>Coordenadas</b>:
        ${feature.geometry.coordinates[1].toFixed(6)}, 
        ${feature.geometry.coordinates[0].toFixed(6)}<br>
-       <b>Altitud</b>: ${feature.properties["ALTURA MSNM"]} m <br></p>
+       <img class="mayaIcon" src="img/Maya_8.svg"><b>Altitud</b>: ${feature.properties["ALTURA MSNM"]} m <br></p>
       <a target="_blank" href="https://www.google.com/maps/dir/Parque+Centro+Am%C3%A9rica,+Quezaltenango,+Guatemala/${feature.geometry.coordinates[1]},${feature.geometry.coordinates[0]}/@${feature.geometry.coordinates[1]},${feature.geometry.coordinates[0]},12.53z">Direcciones</a>
       <img class="sitePhoto" src="img/${feature.properties.uniqueId}.jpg">
       <img class="closeIcon" src="img/close.svg">`;
 
       //special cases for multiphoto sites
       if(feature.properties.uniqueId == 15){
-        popupContent +=`<img class="sitePhoto" src="img/15_1.jpg">
+        popupContent +=`<h3 class="auxilary">IMOX</h3>
+                        <img class="sitePhoto" src="img/15_1.jpg">
+                        <h3 class="auxilary">KAME</h3>
                         <img class="sitePhoto" src="img/15_2.jpg">`
       }
-      if(feature.properties.uniqueId == 50){
-        popupContent +=`<img class="sitePhoto" src="img/50_1.jpg">`
+      if(feature.properties.uniqueId == 50){          
+        popupContent +=`<h3 class="auxilary">AUXILIAR</h3>
+                        <img class="sitePhoto" src="img/50_1.jpg">`
       }
       if(feature.properties.uniqueId == 51){
-        popupContent +=`<img class="sitePhoto" src="img/51_1.jpg">`
+        popupContent +=`<h3 class="auxilary">AUXILIAR</h3>
+                        <img class="sitePhoto" src="img/51_1.jpg">`
       }
       //add closing tag
       popupContent += "</div>";
 
     popupContainer.style("opacity", 0);
-    console.log(popupContent);
     popupContainer.html(popupContent);
     popupContainer.transition().duration(1000).style("opacity", 1);
 
@@ -135,6 +132,7 @@ function addPopupListener(feature,layer) {
 function addMarkers(sitesJson){
 
   var clusterGroup = L.markerClusterGroup({
+      spiderfyOnMaxZoom: false,
       disableClusteringAtZoom: 17
   });
 
@@ -165,15 +163,31 @@ myMap.on("movestart", removePopup);
 //execute from search input
 function zoomToSite(siteName){
   var targetSite;
-
-  //search data for location with matching name
-  for(var site of sitesJson.features){
-      if(site.properties["NOMBRE DE ALTAR"] == siteName){
-          targetSite = site;
-          var coords = site.geometry.coordinates;
-          break; //end for loop once we find coordinates
+  var siteNumber;
+  //check for parentheses, if so split and use name+id to find
+  if(siteName.includes("(")){
+    [siteName,siteNumber] = siteName.split("(");
+    siteNumber = siteNumber.replace(")","");
+    for(var site of sitesJson.features){
+      if(site.properties["NOMBRE DE ALTAR"] == siteName && site.properties["ID"] == siteNumber){
+        targetSite = site;
+        var coords = site.geometry.coordinates;
+        break;
+      }
+    }
+  }
+  else{
+      //use only name
+      for(var site of sitesJson.features){
+          if(site.properties["NOMBRE DE ALTAR"] == siteName){
+              targetSite = site;
+              var coords = site.geometry.coordinates;
+              break; //end for loop once we find coordinates
+          }
       }
   }
+
+  
 
   myMap.flyTo([coords[1],coords[0]], 17); //accepts lat/long
   //then open popup after flyTo event is done

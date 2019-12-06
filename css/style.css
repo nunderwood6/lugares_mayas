@@ -6,16 +6,21 @@ body {
 div#title {
 	font-family: 'Fredericka the Great', cursive;
 	margin: 0 auto;
-	text-align: center;
 	color: #6788A1;
 	text-decoration: underline;
 	position: relative;
+	display: flex;
+	justify-content: space-between;
 }
 
 div#title h1 {
 	margin-bottom: 5px;
 	margin-top: 5px;
+	margin-left: 3%;
+	text-align: left;
+	flex-grow: 1;
 }
+
 
 #mapid {
 	width: 95vw;
@@ -53,13 +58,13 @@ div.popupContainer .inner {
 	top: 50%;
   	left: 50%;
   	width: 90%;
-  	transform: translate(-50%, -50%);
+  	transform: translate(-50%, -45%);
 	z-index: 1200;
 	background-color: rgba(255,255,255,1);
 	border-radius: 5px;
-	max-height: 80%;
 	font-size: 13px;
 	line-height: 14.5px;
+	max-height: 85%;
 
 }
 
@@ -69,12 +74,14 @@ div.popupContainer .inner .content{
 	padding: 10px;
 	font-family: proxima-nova, sans-serif;
 	position: relative;
+	font-size: 16px;
 }
 
 .content h3 {
 	margin: 0;
-	font-size: 18px;
-	line-height: 21px;
+	font-size: 21px;
+	line-height: 24px;
+	margin-bottom: 0;
 }
 
 .content p {
@@ -92,6 +99,8 @@ img.closeIcon {
 
 img.sitePhoto {
 	width: 100%;
+	margin-top: 2px;
+	margin-bottom: 10px;
 }
 
 
@@ -113,11 +122,13 @@ div.autocomplete {
 	font-family: proxima-nova, sans-serif;
 	color: #333;
   pointer-events: auto;
-	position: absolute;
 	right: 5px;
 	bottom: 2px;
 	z-index: 1400;
 	font-size: 18px;
+	align-self: flex-end;
+	margin-bottom: 5px;
+	margin-right: 5px;
 }
 
 .autocomplete-items div{
@@ -134,9 +145,11 @@ div.autocomplete-items {
 	top: 0;
 }
 
-@media only screen and (max-width: 830px){
-	div#title {
-		text-align: left;
-	}
+
+img.mayaIcon {
+	height: 1em;
+	width: 1em;
+	margin-right: 3px;
+	transform: translate(0,2.5px);
 }
 
