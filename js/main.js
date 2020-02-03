@@ -165,9 +165,13 @@ function zoomToSite(siteName){
   var targetSite;
   var siteNumber;
   //check for parentheses, if so split and use name+id to find
-  if(siteName.includes("(")){
+  //one name without duplicates has parentheses, check
+  if(siteName.includes("(") && siteName != "TZ'A'M PORTA (TZ'A'M CHI 'JA')"){
+    console.log("has parentheses");
+    console.log(siteName);
     [siteName,siteNumber] = siteName.split("(");
     siteNumber = siteNumber.replace(")","");
+
     for(var site of sitesJson.features){
       if(site.properties["NOMBRE DE ALTAR"] == siteName && site.properties["ID"] == siteNumber){
         targetSite = site;

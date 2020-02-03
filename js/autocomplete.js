@@ -48,9 +48,9 @@ $("div.autocomplete").html("\
   "TIJAX",
   "TUKUM UMAN",
   "TUKUR AB'AJ",
-  "TZ'A'M PORTA (TZ'A'M CHI' JA')",
+  "TZ'A'M PORTA (TZ'A'M CHI 'JA')",
   "TZ'I'",
-  "UCHI' B'A UL",
+  "UCHI' B'AUL",
   "UJA TZ'OLOJ CHE'",
   "UK'IM KEJ",
   "UKAB' TOB'ANEL",
@@ -64,7 +64,7 @@ $("div.autocomplete").html("\
   "XALQ'AT AB'AJ",
   "XE' CHAJ",
   "XE' JUL B'E'",
-  "XE'AB'AJ",
+  "XE 'AB'AJ",
   "XEL KAJ ULEW"
 ];
 
