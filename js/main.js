@@ -86,9 +86,9 @@ function openPopup(feature){
 
       //special cases for multiphoto sites
       if(feature.properties.uniqueId == 15){
-        popupContent +=`<h3 class="auxilary">IMOX</h3>
+        popupContent +=`<h3 class="auxilary">IMOX(AUXILIAR)</h3>
                         <img class="sitePhoto" src="img/15_1.jpg">
-                        <h3 class="auxilary">KAME</h3>
+                        <h3 class="auxilary">KAME(AUXILIAR)</h3>
                         <img class="sitePhoto" src="img/15_2.jpg">`
       }
       if(feature.properties.uniqueId == 50){          
@@ -166,7 +166,7 @@ function zoomToSite(siteName){
   var siteNumber;
   //check for parentheses, if so split and use name+id to find
   //one name without duplicates has parentheses, check
-  if(siteName.includes("(") && siteName != "TZ'A'M PORTA (TZ'A'M CHI 'JA')"){
+  if(siteName.includes("(") && siteName != "TZ'A'M PORTA (TZ'A'M CHI' JA')"){
     console.log("has parentheses");
     console.log(siteName);
     [siteName,siteNumber] = siteName.split("(");
