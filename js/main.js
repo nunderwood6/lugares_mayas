@@ -38,6 +38,9 @@ function addMap(){
 //initialize leaflet map
 myMap = L.map('mapid', {maxBounds: max_bounds, maxBoundsViscosity:0.1, scrollWheelZoom: false}).fitBounds([topLeft, botRight]);
 
+var container = L.DomUtil.get("container");
+L.DomEvent.disableClickPropagation(container);
+
 //load tile layer
 var cartoTiles = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
