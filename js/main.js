@@ -40,6 +40,7 @@ myMap = L.map('mapid', {maxBounds: max_bounds, maxBoundsViscosity:0.1, scrollWhe
 
 var container = L.DomUtil.get("container");
 L.DomEvent.disableClickPropagation(container);
+L.DomEvent.disableScrollPropagation(container);
 
 //load tile layer
 var cartoTiles = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
