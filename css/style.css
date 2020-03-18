@@ -121,6 +121,7 @@ div#input {
 }
 
 div.autocomplete {
+	z-index: 1400;
 	font-family: proxima-nova, sans-serif;
 	color: #333;
   	pointer-events: auto;
@@ -146,6 +147,7 @@ div#input {
 	cursor: pointer;
 }
 div.autocomplete-items {
+	z-index: 1400;
 	position: absolute;
 	top: 0;
 }
