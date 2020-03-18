@@ -2,7 +2,7 @@
 
 $("div.autocomplete").html("\
   <form name = 'search'>\
-    <div id = 'input'><input id='myInput' type='text' name='park' placeholder='Busca un sitio...'> </div>\
+    <div id = 'input'><input id='myInput' type='text' name='park' placeholder='Busca...'> </div>\
   </form>");
 
 
