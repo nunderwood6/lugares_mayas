@@ -40,7 +40,7 @@ div.popupContainer {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	z-index: 1000;
+	z-index: 1500;
 	pointer-events: none;
 	cursor: auto;
 	overflow: scroll;
@@ -52,7 +52,7 @@ div.popupContainer .inner {
   	left: 50%;
   	width: 90%;
   	transform: translate(-50%, -45%);
-	z-index: 1200;
+	z-index: 1700;
 	background-color: rgba(255,255,255,1);
 	border-radius: 5px;
 	font-size: 13px;
@@ -133,7 +133,7 @@ div.autocomplete {
 }
 
 div#input {
-	z-index: 1400;
+	z-index: 2000;
 }
 
 .autocomplete-items div{
