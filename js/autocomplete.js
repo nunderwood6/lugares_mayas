@@ -74,6 +74,7 @@ $("div.autocomplete").html("\
   function search(inp, arr) {
     var currentFocus;
     inp.addEventListener("input", function(e) {
+        console.log("here!");
         var a, b, i, val = this.value;
         /*close any already open lists of autocompleted values*/
         closeAllLists();
